@@ -1,0 +1,25 @@
+{%extends "base.html" %}
+ 
+ {% block content %}
+ 
+<table class="table table-bordered">
+    <thead>
+      <tr>
+        <th style="width: 10px">Nama</th>
+      
+      </tr>
+    </thead>
+    <tbody>
+      </tr>
+      {% for c in categories %}
+
+      <tr>
+        <td>
+        <a href="/admin/category/{{c.id}}">{{c.name}}</a>
+        </td>
+        
+      {% endfor %}
+    </tbody>
+  </table>
+
+ {% endblock content %}

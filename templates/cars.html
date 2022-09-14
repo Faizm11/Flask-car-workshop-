@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>
+    
+</h1>
+
+
+
+
+<table class="table table-bordered">
+    <thead>
+      <tr>
+        <th style="width: 10px">Nama</th>
+        <th>Warna</th>
+        <th>Harga</th>
+       
+      </tr>
+    </thead>
+    <tbody>
+      </tr>
+      {% for c in car %}
+
+      <tr>
+        <td>{{c.name}}</td>
+        <td>{{c.colour}}</td>
+        <td>{{c.price}}</td>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock content %}

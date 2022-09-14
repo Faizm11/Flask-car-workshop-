@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block  content %}
+<h1>{{category.name}}</h1>
+<a  class="btn btn-primary" href="/admin/category" >back</a>
+<table class="table table-bordered">
+    <thead>
+      <tr>
+        <th style="width: 10px">Nama</th>
+      
+      </tr>
+    </thead>
+    <tbody>
+      </tr>
+      {% for c in cars %}
+
+      <tr>
+        <td>{{c.name}}</td>
+        <td>{{c.price}}</td>
+        <td>{{c.colour}}</td>
+        
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+{% endblock  content %}
