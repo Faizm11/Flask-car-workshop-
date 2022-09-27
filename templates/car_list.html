@@ -18,7 +18,12 @@
         <td>{{c.name}}</td>
         <td>{{c.price}}</td>
         <td>{{c.colour}}</td>
-        
+        <td >
+          <a class="btn btn-warning "href="/admin/category/cars/{{c.id}}/edit">Edit</a>
+        </td>
+        <td >
+          <a class="btn btn-danger "href="/admin/category/cars/{{c.id}}/delete">Delete</a>
+        </td>
       {% endfor %}
     </tbody>
   </table>

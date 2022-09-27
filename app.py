@@ -1,4 +1,5 @@
 
+from cgi import print_exception
 import string
 from turtle import color
 from unicodedata import name
@@ -113,7 +114,43 @@ def add():
         db.session.commit()
         return redirect('/carform')
 
-@app.route ('/admin/category/<int:id>')
+@app.route('/admin/category/cars/<int:id>')
 def get_category_by_id(id):
     get_cars = Cars.query.filter(Cars.category_id == id).all()
     return render_template('car_list.html', cars=get_cars, category =Category.query.filter(Category.id==id).first())
+
+
+
+@app.route('/admin/category/cars/<int:id>/edit')
+def edit_cars(id):
+    cars_edit = Cars.query.filter(Cars.id == id).first()
+    print(cars_edit)
+    form = Carsform(cars_edit=cars_edit)
+    form.category_id.data=cars_edit.category_id
+    form.name_mobil.data = cars_edit.name
+    form.colour_mobil.data = cars_edit.colour
+    form.price_mobil.data = cars_edit.price
+
+    return render_template ('editcar.html', form=form, id=id)
+
+@app.route('/admin/category/cars/<int:id>/update', methods=['POST'])
+def update_category_cars(id):
+    if request.method=='POST':
+        print('Berhasil')
+        print(request.form['category_id'])
+        p = Cars.query.filter(Cars.id == id).first()
+        p.name = request.form['name_mobil']
+        p.colour = request.form['colour_mobil']
+        p.price = request.form['price_mobil']
+        p.category_id = request.form['category_id']
+        db.session.add(p)
+        db.session.commit()
+        return redirect(f'/admin/category/cars/{id}' )
+
+
+@app.route('/admin/category/cars/<int:id>/delete')
+def delete_car(id):
+    car = Cars.query.filter(Cars.id == id).first()
+    db.session.delete(car)
+    db.session.commit()
+    return redirect(f'/admin/category/')
