@@ -1,13 +1,17 @@
 
 from cgi import print_exception
+from contextlib import redirect_stderr
+from socketserver import DatagramRequestHandler
 import string
 from turtle import color
 from unicodedata import name
-from flask import Flask, render_template, request,  redirect, url_for
+from wsgiref.validate import validator
+from flask import Flask, render_template, request,  redirect, url_for 
+from flask_login import login_required, LoginManager, login_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf import FlaskForm 
-from wtforms import StringField, IntegerField, FloatField
+from wtforms import StringField, IntegerField, FloatField, PasswordField
 from wtforms.validators import InputRequired, Length
 import os 
 
@@ -21,8 +25,9 @@ app.config['SECRET_KEY'] = 'AYAM'
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:faiz@localhost/dealer"
 db = SQLAlchemy(app)
 migrate = Migrate(app,db)
-
-
+loginmanager = LoginManager() 
+loginmanager.init_app(app)
+loginmanager.login_message = "Hallo salam dari borjka"
 
 
 class Category(db.Model):
@@ -52,10 +57,20 @@ class Carsform(FlaskForm):
 
 
 class Type (db.Model):
-    _tablename = "type" 
+    __tablename__ = "type" 
     id = db.Column(db.Integer,primary_key=True, autoincrement  = True) 
     name = db.Column(db.String(100), nullable=False)
     cars_id = db.Column(db.Integer, db.ForeignKey("cars.id"))
+
+class User (db.Model):
+    __tablename__ ="users"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(255), nullable=False)
+    password = db.Column(db.String(233), nullable=False)
+
+class UsersFormLogin(FlaskForm):
+    name = StringField("Nama",validators=[InputRequired(), Length(min=1)])
+    p = PasswordField( "Password", validators=[InputRequired(), Length(min=1)])
 
 
 @app.route ('/category')
@@ -98,6 +113,7 @@ def create():
         return redirect('/formcat')
 
 @app.route ('/carform')
+
 def carform():
     form = Carsform()   
     return render_template('carform.html',form=form)
@@ -122,6 +138,8 @@ def get_category_by_id(id):
 
 
 @app.route('/admin/category/cars/<int:id>/edit')
+@loginmanager.user_loader
+@login_required
 def edit_cars(id):
     cars_edit = Cars.query.filter(Cars.id == id).first()
     print(cars_edit)
@@ -130,7 +148,6 @@ def edit_cars(id):
     form.name_mobil.data = cars_edit.name
     form.colour_mobil.data = cars_edit.colour
     form.price_mobil.data = cars_edit.price
-
     return render_template ('editcar.html', form=form, id=id)
 
 @app.route('/admin/category/cars/<int:id>/update', methods=['POST'])
@@ -154,3 +171,25 @@ def delete_car(id):
     db.session.delete(car)
     db.session.commit()
     return redirect(f'/admin/category/')
+
+
+@app.route ('/loginadmin/')
+def loginadmin():
+    form = UsersFormLogin()
+    return render_template('loginusers.html', form=form)
+
+@app.route ('/loginproses/',methods=['POST'])
+def loginproses():
+    if request.method == 'POST':
+        print("oiii")
+        name = request.form['name']
+        p = request.form['p']
+        obj = User.query.filter_by(name= name).first()
+        print("Ini user:", obj)
+        if not user:
+            redirect('/loginuser.html')
+        else :
+            login_user(obj)
+            redirect("/admin/category/")
+    print("eror")
+

@@ -1,5 +1,5 @@
 
-from app import Category, Cars, Type, db
+from app import Category, Cars, Type, db, User
 
 # c1= Category()
 # c2= Category()
@@ -20,29 +20,33 @@ from app import Category, Cars, Type, db
 # db.session.commit()
 
 
+u2= User()
+u2.name="David Smith"
+u2.password="1213aa"
 
 
 
-c1= Cars()
 
-c1.name = "Avanza"
-c1.price = 250000000
-c1.category_id = 3 
-c1.colour = "black"
+# c1= Cars()
 
-c2= Cars()
+# c1.name = "Avanza"
+# c1.price = 250000000
+# c1.category_id = 3 
+# c1.colour = "black"
 
-c2.name = "Veloz"
-c2.price = 350000000
-c2.category_id = 3 
-c2.colour = "black"
+# c2= Cars()
 
-c3= Cars()
+# c2.name = "Veloz"
+# c2.price = 350000000
+# c2.category_id = 3 
+# c2.colour = "black"
 
-c3.name = "AE86"
-c3.price = 850000000
-c3.category_id = 6
-c3.colour = "black"
+# c3= Cars()
 
-db.session.add_all([c1,c2,c3])
+# c3.name = "AE86"
+# c3.price = 850000000
+# c3.category_id = 6
+# c3.colour = "black"
+
+db.session.add(u2)
 db.session.commit()
