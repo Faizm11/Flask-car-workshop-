@@ -1,4 +1,5 @@
 
+from atexit import register
 from cgi import print_exception
 from contextlib import redirect_stderr
 from socketserver import DatagramRequestHandler
@@ -13,7 +14,9 @@ from flask_migrate import Migrate
 from flask_wtf import FlaskForm 
 from wtforms import StringField, IntegerField, FloatField, PasswordField
 from wtforms.validators import InputRequired, Length
+from werkzeug.security import generate_password_hash, check_password_hash
 import os 
+import flask_login
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -67,10 +70,14 @@ class User (db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     password = db.Column(db.String(233), nullable=False)
+    is_activate = db.column(db.Boolean, )
 
 class UsersFormLogin(FlaskForm):
     name = StringField("Nama",validators=[InputRequired(), Length(min=1)])
     p = PasswordField( "Password", validators=[InputRequired(), Length(min=1)])
+
+
+
 
 
 @app.route ('/category')
@@ -192,4 +199,23 @@ def loginproses():
             login_user(obj)
             redirect("/admin/category/")
     print("eror")
+
+
+@app.route('/admin/regis')
+def regis():
+    user = UsersFormLogin()
+    return render_template('regis.html', user=user)
+
+@app.route('/admin/regis/create', methods=['POST'])
+def regis1() :
+    if request.method == 'POST':
+        name = request.form['name']
+        p = request.form['p']
+        obj= User()
+        obj.name = name
+        obj.password =generate_password_hash(p, method="sha256")
+        db.session.add(obj)
+        db.session.commit()
+        return redirect('/loginadmin')
+
 
